@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* Design tokens, v3 "Light sky" (see DESIGN.md). Started from mockup Direction A, then moved away from its
+   Duolingo-like green/3D look into Cloudbreak's own identity: light sky blue, sunrise amber, mint (not green) for success. */
+@theme {
+  --color-sky: #7cc8f8; /* primary: soft light blue (fills, accents) */
+  --color-sky-dark: #1673ad; /* readable blue for text and links on white */
+  --color-sky-soft: #e8f6ff;
+  --color-brand: #1cb0f6; /* the mockup's button blue: primary actions, white text */
+  --color-brand-dark: #1899d6;
+  --color-sun: #ffb020; /* sunrise amber: XP, money, the sun */
+  --color-sun-dark: #c77700;
+  --color-sun-soft: #fff4dc;
+  --color-grass: #10b39b; /* "success" is mint teal, not Duolingo green */
+  --color-grass-dark: #0a7f6e;
+  --color-grass-soft: #dcf7f2;
+  --color-coral: #f2545b; /* SOS / crisis */
+  --color-coral-dark: #c8323a;
+  --color-coral-soft: #ffe6e7;
+  --color-ink: #141b34; /* deep navy text */
+  --color-ink-soft: #55607a;
+  --color-muted: #a3abbd;
+  --color-line: #e6e9f2;
+  --color-cloud: #f5f7fc;
+
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.5rem;
+  --radius-pill: 9999px;
+}
+
+body {
+  background: #fbfcff;
+  color: var(--color-ink);
+}
+
+/* Organic blob mask for illustrations (like the mockup's brain blob) */
+.cb-blob { border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%; }
+
+/* ---------- Phone frame (desktop only) ---------- */
+.min-h-app { min-height: var(--app-h, 100dvh); }
+.cb-statusbar, .cb-caption { display: none; }
+@media (min-width: 768px) {
+  body { background: radial-gradient(1200px 700px at 50% 0%, #e8f6ff, #f4f7ff 55%, #eef2fb); }
+  .cb-stage { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 0 18px; }
+  .cb-device {
+    --app-h: 800px;
+    position: relative; width: 390px; height: 844px; border-radius: 56px; background: #fbfcff;
+    border: 12px solid #141b34; box-shadow: 0 0 0 2px #2a3352, 0 40px 80px -20px rgb(20 27 52 / .45), inset 0 0 0 1px rgb(255 255 255 / .06);
+    overflow: hidden; transform: translateZ(0); /* contains position:fixed children */
+  }
+  .cb-statusbar {
+    display: flex; position: absolute; inset: 0 0 auto 0; z-index: 60; height: 44px; padding: 0 28px; align-items: center;
+    justify-content: space-between; font-weight: 700; font-size: 15px; color: #141b34; pointer-events: none;
+  }
+  .cb-island { position: absolute; left: 50%; top: 10px; width: 118px; height: 33px; margin-left: -59px; border-radius: 20px; background: #0b0f1d; }
+  .cb-status-icons { display: flex; gap: 6px; align-items: center; fill: currentColor; }
+  .cb-screen { position: absolute; inset: 44px 0 0 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .cb-screen::-webkit-scrollbar { display: none; }
+  .cb-caption { display: block; margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--color-ink-soft); }
+}
+
+/* Slow drifting fog clouds on the home sky */
+@keyframes cb-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 14px -4px; }
+}
+.cb-drift { animation: cb-drift 9s ease-in-out infinite; }
+
+/* Lesson visuals */
+@keyframes cb-dash { to { stroke-dashoffset: 0; } }
+@keyframes cb-pulse { 0%, 100% { opacity: .35; r: 4; } 50% { opacity: 1; r: 7; } }
+
+@keyframes cb-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+.cb-bob { animation: cb-bob 3.2s ease-in-out infinite; }
+@keyframes cb-sheet { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.cb-sheet { animation: cb-sheet 220ms cubic-bezier(.2,.8,.2,1); }
+@keyframes cb-grow { from { transform: scale(.92); opacity: .4; } to { transform: none; opacity: 1; } }
+.cb-grow { animation: cb-grow 600ms cubic-bezier(.2,.8,.2,1); transform-origin: 50% 100%; }
+
+/* SOS "Clear the storm": clouds drift across the panel; a pop is a quick ring + sparkle burst */
+@keyframes cb-cloud-drift { from { left: -32%; } to { left: 104%; } }
+.cb-cloud-drift { animation: cb-cloud-drift 12s linear infinite; }
+@keyframes cb-burst { from { transform: scale(.5); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+.cb-burst { animation: cb-burst 550ms ease-out forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-bob, .cb-sheet, .cb-grow, .cb-cloud-drift, .cb-burst,
+  .cb-drift, [class*="cb-anim"] { animation: none !important; }
+  .cb-burst { opacity: 0; }
+}
+
+/* Pressable surface: soft lift + gentle press (replaces the chunky Duolingo-style 3D border) */
+@utility btn-3d {
+  box-shadow: 0 1px 2px rgb(20 27 52 / 0.06), 0 4px 14px -6px rgb(20 27 52 / 0.18);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  &:hover {
+    box-shadow: 0 2px 4px rgb(20 27 52 / 0.06), 0 8px 22px -8px rgb(20 27 52 / 0.25);
+  }
+  &:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 1px 2px rgb(20 27 52 / 0.08);
+  }
+}
+
+/* The mockup's chunky pill button: solid darker "lip" under the button that presses in */
+@utility btn-pop {
+  box-shadow: 0 5px 0 var(--color-brand-dark);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+  &:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--color-brand-dark); }
+}
+
+/* Card surface */
+@utility card {
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px rgb(20 27 52 / 0.04), 0 8px 24px -16px rgb(20 27 52 / 0.15);
+}
